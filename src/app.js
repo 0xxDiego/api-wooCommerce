@@ -3,6 +3,7 @@ const express = require('express');
 const Crypto = require('crypto-js');
 const cors = require('cors');
 require('dotenv').config();
+const fetch = require('node-fetch');
 
 // Configurar o app Express
 const app = express();
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware para permitir JSON e CORS
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000', // Substitua pelo URL do seu cliente
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With', 'Accept'],
 }));
@@ -21,23 +22,39 @@ function generateRandomNonce(length) {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let nonce = '';
     for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
-        nonce += charset.charAt(randomIndex);
+        nonce += charset.charAt(Math.floor(Math.random() * charset.length));
     }
     return nonce;
 }
 
-// Função para lidar com requisições GET e POST
-app.use('/api/:resource', async (req, res) => {
+// Gerar string de parâmetros
+function generateParameterString(parameters) {
+    return Object.keys(parameters)
+        .sort()
+        .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(parameters[key])}`)
+        .join('&');
+}
 
-    console.log("/api/:resource ## woocomerce");
-    
-    const resource = req.params.resource;
-    const apiUrl = `${process.env.WC_URL}/wp-json/wc/v3/${resource}`;
+// Gerar cabeçalho OAuth
+function generateOauthHeader(apiUrl, method, parameters) {
+    const signatureBaseString = `${method}&${encodeURIComponent(apiUrl)}&${encodeURIComponent(generateParameterString(parameters))}`;
+    const signature = Crypto.enc.Base64.stringify(
+        Crypto.HmacSHA1(signatureBaseString, `${encodeURIComponent(process.env.WC_CONSUMER_SECRET)}&`)
+    );
+
+    return `OAuth oauth_consumer_key="${encodeURIComponent(process.env.WC_CONSUMER_KEY)}", oauth_nonce="${encodeURIComponent(
+        parameters.oauth_nonce
+    )}", oauth_signature="${encodeURIComponent(signature)}", oauth_signature_method="HMAC-SHA1", oauth_timestamp="${encodeURIComponent(
+        parameters.oauth_timestamp
+    )}", oauth_version="1.0"`;
+}
+
+// Função para fazer a requisição para o WooCommerce
+async function woocommerceRequest(method, endpoint, body = null) {
+    const apiUrl = `${process.env.WC_URL}/wp-json/wc/v3/${endpoint}`;
     const nonce = generateRandomNonce(32);
     const timestamp = Math.floor(Date.now() / 1000).toString();
 
-    // Parâmetros OAuth
     const oauthParams = {
         oauth_consumer_key: process.env.WC_CONSUMER_KEY,
         oauth_nonce: nonce,
@@ -46,79 +63,65 @@ app.use('/api/:resource', async (req, res) => {
         oauth_version: '1.0',
     };
 
-    const method = req.method;
+    const oauthHeader = generateOauthHeader(apiUrl, method, oauthParams);
 
-    // Gerar string de parâmetros
-    const generateParameterString = (parameters) =>
-        Object.keys(parameters)
-            .sort()
-            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(parameters[key])}`)
-            .join('&');
+    const response = await fetch(apiUrl, {
+        method,
+        headers: {
+            Authorization: oauthHeader,
+            'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : null,
+    });
 
-    // Gerar cabeçalho OAuth
-    const generateOauthHeader = (parameters) => {
-        const signatureBaseString = `${method}&${encodeURIComponent(apiUrl)}&${encodeURIComponent(generateParameterString(parameters))}`;
-        const signature = Crypto.enc.Base64.stringify(
-            Crypto.HmacSHA1(signatureBaseString, `${encodeURIComponent(process.env.WC_CONSUMER_SECRET)}&`)
-        );
+    return response;
+}
 
-        return `OAuth oauth_consumer_key="${encodeURIComponent(process.env.WC_CONSUMER_KEY)}", oauth_nonce="${encodeURIComponent(
-            nonce
-        )}", oauth_signature="${encodeURIComponent(signature)}", oauth_signature_method="HMAC-SHA1", oauth_timestamp="${encodeURIComponent(
-            timestamp
-        )}", oauth_version="1.0"`;
-    };
+// Rota POST para adicionar um produto
+app.post('/api/products', async (req, res) => {
+    const productData = req.body;
 
-    // Tratar requisições GET
-    if (method === 'GET') {
-        const queryParams = req.query; // Express já faz o parsing de query params
-        const oauthHeader = generateOauthHeader({ ...oauthParams, ...queryParams });
+    try {
+        const response = await woocommerceRequest('POST', 'products', productData);
+        const responseData = await response.json();
+        res.status(response.status).json(responseData);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
+    }
+});
 
-        const parameteredURL = `${apiUrl}?${generateParameterString(queryParams)}`;
-
-        try {
-            const response = await fetch(parameteredURL, {
-                method: 'GET',
-                headers: {
-                    Authorization: oauthHeader,
-                },
-            });
-
-            const data = await response.json();
-            res.status(response.status).json(data);
-        } catch (error) {
-            res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
-        }
-    } else if (method === 'POST') {
-        const contentType = req.headers['content-type'];
-        if (contentType && contentType.includes('application/json')) {
-            const requestData = req.body;
-            const oauthHeader = generateOauthHeader(oauthParams);
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: oauthHeader,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData),
-                });
-
-                const responseData = await response.json();
-                res.status(response.status).json(responseData);
-            } catch (error) {
-                res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
-            }
-        } else {
-            res.status(405).json({ error: `Wrong content-type: ${contentType}, only 'application/json' is supported` });
-        }
-    } else {
-        res.status(405).json({ error: `Method ${method} not allowed.` });
+// Rota GET para listar produtos
+app.get('/api/wc/products', async (req, res) => {
+    try {
+        const response = await woocommerceRequest('GET', 'products');
+        const data = await response.json();
+        res.status(response.status).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
     }
 });
 
 // Iniciar o servidor
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+
+    // Chamar a rota POST para enviar um produto de teste em seguida vamos criar o lado cliente com interface grafica.
+    const productData = {
+        name: "Produto de Teste",
+        type: "simple",
+        regular_price: "19.99",
+        description: "Descrição do Produto de Teste",
+        short_description: "Descrição Curta do Produto",
+        categories: [{ id: 9 }], // Certifique-se de que essa categoria exista no WooCommerce
+        // images: [{ src: "https://picsum.photos/200" }]
+    };
+    
+
+    try {
+        const response = await woocommerceRequest('POST', 'products', productData);
+        const responseData = await response.json();
+        console.log('Produto adicionado:', responseData);
+    } catch (error) {
+        console.error('Erro ao adicionar produto:', error.message);
+    }
 });
