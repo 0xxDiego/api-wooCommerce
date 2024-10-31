@@ -1,21 +1,16 @@
-// Importar dependências
+// server.js
 const express = require('express');
 const Crypto = require('crypto-js');
 const cors = require('cors');
 require('dotenv').config();
 const fetch = require('node-fetch');
 
-// Configurar o app Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware para permitir JSON e CORS
 app.use(express.json());
-app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With', 'Accept'],
-}));
+app.use(cors());
+app.use(express.static(__dirname + '/public'));
 
 // Função para gerar nonce aleatório
 function generateRandomNonce(length) {
@@ -101,27 +96,12 @@ app.get('/api/wc/products', async (req, res) => {
     }
 });
 
+// Rota principal para servir o HTML
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
+
 // Iniciar o servidor
-app.listen(PORT, async () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-
-    // Chamar a rota POST para enviar um produto de teste em seguida vamos criar o lado cliente com interface grafica.
-    const productData = {
-        name: "Produto de Teste",
-        type: "simple",
-        regular_price: "19.99",
-        description: "Descrição do Produto de Teste",
-        short_description: "Descrição Curta do Produto",
-        categories: [{ id: 9 }], // Certifique-se de que essa categoria exista no WooCommerce
-        // images: [{ src: "https://picsum.photos/200" }]
-    };
-    
-
-    try {
-        const response = await woocommerceRequest('POST', 'products', productData);
-        const responseData = await response.json();
-        console.log('Produto adicionado:', responseData);
-    } catch (error) {
-        console.error('Erro ao adicionar produto:', error.message);
-    }
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

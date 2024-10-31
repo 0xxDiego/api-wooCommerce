@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    font-size: 14px;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+form {
+    max-width: 400px;
+}
+
+/* Estilo para cada linha de label e input */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+/* Espaçamento e largura reduzida para o label */
+.form-group label {
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+/* Define uma largura e altura menores para input e textarea */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    max-width: 280px;
+    padding: 6px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+/* Estilo do botão "Adicionar Produto" */
+button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.add-button {
+    background-color: green;
+    color: white;
+    border: none;
+}
+
+#productList {
+    margin-top: 15px;
+}
+
+#productList ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#productList li {
+    padding: 6px;
+    font-size: 13px;
+    border-bottom: 1px solid #ddd;
+}
