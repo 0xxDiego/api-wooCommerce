@@ -96,6 +96,28 @@ app.get('/api/wc/products', async (req, res) => {
     }
 });
 
+// Rota GET para listar orders
+app.get('/api/wc/orders', async (req, res) => {
+    try {
+        const response = await woocommerceRequest('GET', 'orders');
+        const data = await response.json();
+        res.status(response.status).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
+    }
+});
+
+// Rota GET para listar clientes
+app.get('/api/wc/customers', async (req, res) => {
+    try {
+        const response = await woocommerceRequest('GET', 'customers');
+        const data = await response.json();
+        res.status(response.status).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
+    }
+});
+
 // Rota principal para servir o HTML
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
