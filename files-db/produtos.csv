@@ -1,0 +1,4 @@
+name,type,description,short_description,categories,images
+Produto A,simples,Descrição A,Descrição Curta A,1,https://example.com/imagemA.jpg
+Produto B,variável,Descrição B,Descrição Curta B,2,https://example.com/imagemB.jpg
+Produto C,simples,Descrição C,Descrição Curta C,3,https://example.com/imagemC.jpg

@@ -1,0 +1,4 @@
+email,first_name,last_name,username,billing,shipping
+clienteA@example.com,Primeiro A,Último A,userA,Endereço de cobrança A,Endereço de entrega A
+clienteB@example.com,Primeiro B,Último B,userB,Endereço de cobrança B,Endereço de entrega B
+clienteC@example.com,Primeiro C,Último C,userC,Endereço de cobrança C,Endereço de entrega C
