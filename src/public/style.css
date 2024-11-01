@@ -111,3 +111,52 @@ h1 {
     max-width: 400px;
     margin: auto;
 }
+
+.product-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.order-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.customer-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.tabsMain {
+    display: flex; /* Usar flexbox para dispor os botões em linha */
+    justify-content: space-between; /* Distribuir espaço igualmente entre os botões */
+    background-color: #f0f0f0; /* Cor de fundo para a barra de abas */
+    border-radius: 5px; /* Arredondar os cantos da barra */
+    overflow: hidden; /* Esconder o transbordo */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para efeito de profundidade */
+}
+
+.tab-buttonMain {
+    flex: 1; /* Faz cada botão ocupar igual espaço */
+    padding: 15px; /* Preencher o botão com espaço interno */
+    border: none; /* Remover a borda padrão */
+    background-color: #007bff; /* Cor de fundo do botão */
+    color: white; /* Cor do texto do botão */
+    font-size: 16px; /* Tamanho da fonte */
+    cursor: pointer; /* Cursor de mão ao passar o mouse */
+    transition: background-color 0.3s; /* Transição suave para mudança de cor */
+}
+
+.tab-buttonMain:hover {
+    background-color: #0056b3; /* Cor do botão ao passar o mouse */
+}
+
+.tab-buttonMain:focus {
+    outline: none; /* Remover contorno ao focar */
+}

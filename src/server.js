@@ -72,6 +72,36 @@ async function woocommerceRequest(method, endpoint, body = null) {
     return response;
 }
 
+// Rota POST para adicionar um produtos, pedidos e clientes.
+app.post('/api/wc', async (req, res) => {
+    const { type, data } = req.body;
+    let endpoint;
+
+    // Definir o endpoint WooCommerce com base no tipo
+    switch (type) {
+        case 'product':
+            endpoint = 'products';
+            break;
+        case 'order':
+            endpoint = 'orders';
+            break;
+        case 'customer':
+            endpoint = 'customers';
+            break;
+        default:
+            return res.status(400).json({ error: 'Tipo inválido. Use "product", "order" ou "customer".' });
+    }
+
+    try {
+        // Requisição para WooCommerce com o endpoint dinâmico
+        const response = await woocommerceRequest('POST', endpoint, data);
+        const responseData = await response.json();
+        res.status(response.status).json(responseData);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao fazer requisição ao WooCommerce', details: error.message });
+    }
+});
+
 // Rota POST para adicionar um produto
 app.post('/api/products', async (req, res) => {
     const productData = req.body;

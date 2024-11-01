@@ -1,26 +1,28 @@
 # API REST WooCommerce
 
 ## 1. Getting Started
+## yarn install
+## node src/app.js
 
-Para iniciar a aplicação, use o seguinte comando:
+# 2. Funcionalidade
 
-```bash
-yarn install
-node src/app.js
+## mostrar produtos woocomerce
+## mostrar pedidos woocomerce
+## mostrar clientes woocomerce
+## add produto no woocomerce
 
+## importar produtos .CSV
+## importar pedidos .CSV
+## importar clientes .CSV
 
-http://localhost:3000/api/wc/{recurso}
-3. Exemplos de Recurso
-Aqui estão alguns exemplos de como chamar diferentes recursos, assumindo que sua API é a padrão do WooCommerce:
+## salvar produtos .CSV (pendente)
+## salvar pedidos .CSV (pendente)
+## salvar clientes .CSV (pendente)
 
-Para produtos:
-http://localhost:3000/api/products
+## importar produtos .XLSX
+## importar pedidos .XLSX
+## importar clientes .XLSX
 
-Para pedidos:
-http://localhost:3000/api/orders
-
-Para clientes:
-http://localhost:3000/api/customers
-
-
-# Para enviar produto de teste via API atualmente e feito automaticamente quando e startado o servidor porem iremos criar o lado cliente.
+## salvar produtos .XLSX (pendente)
+## salvar pedidos .XLSX (pendente)
+## salvar clientes .XLSX (pendente)

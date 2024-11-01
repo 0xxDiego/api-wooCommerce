@@ -10,16 +10,55 @@
   <h1>Gerenciador de Produtos WooCommerce</h1>
 
   <!-- Abas de navegação -->
-  <div class="tabs">
-    <button class="tab-button" onclick="showTab('pos')">Ponto de Venda</button>
-    <button class="tab-button" onclick="showTab('woocommerce')">WooCommerce</button>
-    <button class="tab-button" onclick="showTab('sync')">Sincronização</button>
+  <div class="tabsMain">
+    <button class="tab-buttonMain" onclick="showTab('pos')">Ponto de Venda</button>
+    <button class="tab-buttonMain" onclick="showTab('woocommerce')">WooCommerce</button>
+    <button class="tab-buttonMain" onclick="showTab('sync')">Sincronização</button>
   </div>
 
-  <!-- Conteúdo das Abas -->
+
   <div class="tab-content" id="pos" style="display: none;">
-    <h2>Ponto de Venda</h2>
-    <!-- Conteúdo vazio por enquanto -->
+    <h2>PDV</h2>
+
+    <!-- Abas para Upload -->
+    <div class="tabs">
+        <button class="tab-button" onclick="showUploadTab('products')">Upload Produtos</button>
+        <button class="tab-button" onclick="showUploadTab('orders')">Upload Pedidos</button>
+        <button class="tab-button" onclick="showUploadTab('customers')">Upload Clientes</button>
+    </div>
+
+    <!-- Conteúdo das Abas -->
+    <div class="upload-tab-content" id="uploadProducts" style="display: block;">
+        <h2>Upload Produtos</h2>
+        <label for="csvFileInputProducts">Selecione CSV (.csv):</label>
+        <input type="file" id="csvFileInputProducts" accept=".csv">
+        <label for="xlsxFileInputProducts">ou XLSX (.xlsx):</label>
+        <input type="file" id="xlsxFileInputProducts" accept=".xlsx">
+        <div id="productList"></div>
+        <button onclick="saveProductsToWooCommerce()">Salvar Produtos no WooCommerce</button>
+    </div>
+
+    <div class="upload-tab-content" id="uploadOrders" style="display: none;">
+        <h2>Upload Pedidos</h2>
+        <label for="csvFileInputOrders">Selecione CSV (.csv):</label>
+        <input type="file" id="csvFileInputOrders" accept=".csv">
+        <label for="xlsxFileInputOrders">ou XLSX (.xlsx):</label>
+        <input type="file" id="xlsxFileInputOrders" accept=".xlsx">
+        <div id="ordersList"></div>
+        <button onclick="saveOrdersToWooCommerce()">Salvar Pedidos no WooCommerce</button>
+    </div>
+
+    <div class="upload-tab-content" id="uploadCustomers" style="display: none;">
+        <h2>Upload Clientes</h2>
+        <label for="csvFileInputCustomers">Selecione CSV (.csv):</label>
+        <input type="file" id="csvFileInputCustomers" accept=".csv">
+        <label for="xlsxFileInputCustomers">ou XLSX (.xlsx):</label>
+        <input type="file" id="xlsxFileInputCustomers" accept=".xlsx">
+        <div id="customersList"></div>
+        <button onclick="saveCustomersToWooCommerce()">Salvar Clientes no WooCommerce</button>
+    </div>
+
+
   </div>
 
   <div class="tab-content" id="woocommerce" style="display: none;">
@@ -27,13 +66,14 @@
 
     <!-- Abas internas de WooCommerce -->
     <div class="sub-tabs">
-      <button class="sub-tab-button" onclick="showSubTab('woocommerceProducts')">Produtos WC</button>
-      <button class="sub-tab-button" onclick="showSubTab('woocommerceOrders')">Pedidos WC</button>
-      <button class="sub-tab-button" onclick="showSubTab('woocommerceCustomers')">Clientes WC</button>
+      <button class="sub-tab-button" onclick="showSubTab('woocommerceAddProducts')">ADD Produtos WC</button>
+      <button class="sub-tab-button" onclick="showSubTab('woocommerceProducts')">Ver Produtos WC</button>
+      <button class="sub-tab-button" onclick="showSubTab('woocommerceOrders')">Ver Pedidos WC</button>
+      <button class="sub-tab-button" onclick="showSubTab('woocommerceCustomers')">Ver Clientes WC</button>
     </div>
 
     <!-- Conteúdo das Sub-Abas -->
-    <div class="sub-tab-content" id="woocommerceProducts" style="display: none;">
+    <div class="sub-tab-content" id="woocommerceAddProducts" style="display: none;">
       <h2>ADD Produto WooCommerce</h2>
       <!-- Formulário para adicionar produtos WooCommerce -->
       <form id="productForm">
@@ -67,7 +107,13 @@
         </div>
         <button type="button" class="add-button" onclick="addProduct()">Adicionar Produto</button>
       </form>
-      <button onclick="getProducts()">Ver Lista de Produtos</button>
+      
+    </div>
+
+    <!-- Conteúdo das Sub-Abas -->
+    <div class="sub-tab-content" id="woocommerceProducts" style="display: none;">
+      <h2>Produtos WooCommerce</h2>
+      <button onclick="getProducts()">Mostrar Produtos</button>
       <div id="productListProducts"></div>
     </div>
 
@@ -89,6 +135,8 @@
     <!-- Conteúdo vazio por enquanto -->
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
   <script src="script.js"></script>
 
   <script>
