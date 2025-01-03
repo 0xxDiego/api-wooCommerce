@@ -1,28 +1,43 @@
-# API REST WooCommerce
+# Gerenciador de Produtos WooCommerce
 
-## 1. Getting Started
-## yarn install
-## node src/app.js
+Este projeto é uma interface web que permite gerenciar produtos, pedidos e clientes de um sistema WooCommerce. Ele inclui funcionalidades para upload de arquivos CSV/XLSX, adição manual de produtos, e visualização de dados armazenados no WooCommerce.
 
-# 2. Funcionalidade
+## 📋 Funcionalidades
 
-## mostrar produtos woocomerce
-## mostrar pedidos woocomerce
-## mostrar clientes woocomerce
-## add produto no woocomerce
+- **Gerenciamento de PDV (Ponto de Venda)**:
+  - Upload de produtos, pedidos e clientes em formatos CSV ou XLSX.
+  - Integração para salvar dados diretamente no WooCommerce.
 
-## importar produtos .CSV
-## importar pedidos .CSV
-## importar clientes .CSV
+- **Gerenciamento de WooCommerce**:
+  - Adicionar produtos manualmente com formulário.
+  - Listar produtos, pedidos e clientes já cadastrados no WooCommerce.
 
-## salvar produtos .CSV (pendente)
-## salvar pedidos .CSV (pendente)
-## salvar clientes .CSV (pendente)
+- **Sincronização de Dados**:
+  - Abas dedicadas para futuras implementações de sincronização entre sistemas.
 
-## importar produtos .XLSX
-## importar pedidos .XLSX
-## importar clientes .XLSX
+## 🛠️ Tecnologias Utilizadas
 
-## salvar produtos .XLSX (pendente)
-## salvar pedidos .XLSX (pendente)
-## salvar clientes .XLSX (pendente)
+- **HTML5 e CSS3** para estrutura e estilo.
+- **JavaScript** para funcionalidades dinâmicas.
+- **Bibliotecas Externas**:
+  - [Papa Parse](https://www.papaparse.com/) para manipulação de arquivos CSV.
+  - [SheetJS (xlsx)](https://sheetjs.com/) para leitura de arquivos XLSX.
+
+Navegação
+Use as abas principais para alternar entre:
+
+PDV: Upload de arquivos.
+WooCommerce: Gerenciamento de dados do WooCommerce.
+Sincronização: (Em construção).
+Dentro de cada aba, você encontrará funcionalidades específicas:
+
+Upload de arquivos CSV/XLSX.
+
+🌟 Aprendizado Esperado
+Este projeto serve como uma oportunidade para aprender e experimentar com:
+
+Manipulação de arquivos (CSV e XLSX) usando JavaScript.
+Integração com APIs REST, como as fornecidas pelo WooCommerce.
+
+🛡️ Licença
+Este projeto está licenciado sob a MIT License.

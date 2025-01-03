@@ -23,12 +23,10 @@ document.getElementById('xlsxFileInputOrders').addEventListener('change', event 
 document.getElementById('csvFileInputCustomers').addEventListener('change', event => handleCSVFile(event, 'customers'));
 document.getElementById('xlsxFileInputCustomers').addEventListener('change', event => handleXLSXFile(event, 'customersXLSX'));
 
-// Variáveis para armazenar os dados carregados
 let loadedProducts = [];
 let loadedOrders = [];
 let loadedCustomers = [];
 
-// Função para salvar produtos no WooCommerce
 async function saveProductsToWooCommerce() {
     for (const product of loadedProducts) {
         await sendToWooCommerce('product', product);
@@ -53,7 +51,10 @@ async function saveCustomersToWooCommerce() {
 }
 
 // Função genérica para enviar dados ao WooCommerce
-async function sendToWooCommerce(type, data) {
+/*async function sendToWooCommerce(type, data) {
+
+    // console.log("teeeeeeeeeste produtos ### 01", data);
+
     const url = `http://localhost:3000/api/wc/${type}s`;
     try {
         const response = await fetch(url, {
@@ -68,6 +69,45 @@ async function sendToWooCommerce(type, data) {
         }
     } catch (error) {
         console.error(`Erro ao salvar ${type} no WooCommerce:`, error);
+    }
+}*/
+
+async function sendToWooCommerce(product) {
+    const apiUrl = 'http://localhost:3000/api/wc/products'; // URL da API para produtos
+
+    const productData = {
+        name: product.name || "Nome do Produto",
+        type: product.type || "simple", // Certifique-se de que o tipo é válido
+        regular_price: product.price || "0.00",
+        categories: [
+            {
+                id: 12 // Exemplo: ID de uma categoria existente
+            },
+            {
+                id: 15 // Outro ID de categoria, se necessário
+            }
+        ],
+        // Adicione outros campos conforme necessário
+    };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(productData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erro ao enviar para WooCommerce:", errorData);
+        } else {
+            const result = await response.json();
+            console.log("Produto enviado com sucesso:", result);
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
     }
 }
 
@@ -239,6 +279,8 @@ function showCustomers(customers) {
 
 // Função para exibir dados de produtos
 function showProductsXLSX(products) {
+    loadedProducts = products;  // Armazena os dados carregados
+
     const productsListDiv = document.getElementById('productList'); // Obtém a referência ao elemento de lista de produtos
     productsListDiv.innerHTML = ''; // Limpa qualquer conteúdo anterior
 
@@ -281,6 +323,8 @@ function showProductsXLSX(products) {
 
 // Função para exibir dados de pedidos
 function showOrdersXLSX(orders) {
+    loadedOrders = orders;  // Armazena os dados carregados
+
     const ordersListDiv = document.getElementById('ordersList'); // Obtém a referência ao elemento de lista de pedidos
     ordersListDiv.innerHTML = ''; // Limpa qualquer conteúdo anterior
 
@@ -313,22 +357,44 @@ function showOrdersXLSX(orders) {
     }
 }
 
-// Função para exibir dados de clientes
+// Função para exibir dados de clientes com a estrutura correta de parâmetros
 function showCustomersXLSX(customers) {
+    loadedCustomers = customers;  // Armazena os dados carregados
+
     const customersListDiv = document.getElementById('customersList'); // Obtém a referência ao elemento de lista de clientes
     customersListDiv.innerHTML = ''; // Limpa qualquer conteúdo anterior
 
     // Verifica se customers é um array e não está vazio
     if (Array.isArray(customers) && customers.length > 0) {
         customers.forEach(customer => {
-            // Verifica se cada campo está definido
+            // Verifica se cada campo está definido e exibe a estrutura correta
             const customerData = {
                 email: customer[0] || "N/A",
                 first_name: customer[1] || "N/A",
                 last_name: customer[2] || "N/A",
                 username: customer[3] || "N/A",
-                billing: customer[4] || "N/A",
-                shipping: customer[5] || "N/A"
+                billing: {
+                    first_name: customer[4]?.first_name || "N/A",
+                    last_name: customer[4]?.last_name || "N/A",
+                    address_1: customer[4]?.address_1 || "N/A",
+                    address_2: customer[4]?.address_2 || "N/A",
+                    city: customer[4]?.city || "N/A",
+                    state: customer[4]?.state || "N/A",
+                    postcode: customer[4]?.postcode || "N/A",
+                    country: customer[4]?.country || "N/A",
+                    email: customer[4]?.email || "N/A",
+                    phone: customer[4]?.phone || "N/A"
+                },
+                shipping: {
+                    first_name: customer[5]?.first_name || "N/A",
+                    last_name: customer[5]?.last_name || "N/A",
+                    address_1: customer[5]?.address_1 || "N/A",
+                    address_2: customer[5]?.address_2 || "N/A",
+                    city: customer[5]?.city || "N/A",
+                    state: customer[5]?.state || "N/A",
+                    postcode: customer[5]?.postcode || "N/A",
+                    country: customer[5]?.country || "N/A"
+                }
             };
 
             // Cria um elemento para mostrar os dados do cliente
@@ -339,8 +405,30 @@ function showCustomersXLSX(customers) {
                 <p><strong>Email:</strong> ${customerData.email}</p>
                 <p><strong>Nome:</strong> ${customerData.first_name} ${customerData.last_name}</p>
                 <p><strong>Usuário:</strong> ${customerData.username}</p>
-                <p><strong>Informações de Cobrança:</strong> ${JSON.stringify(customerData.billing)}</p>
-                <p><strong>Informações de Envio:</strong> ${JSON.stringify(customerData.shipping)}</p>
+                <p><strong>Informações de Cobrança:</strong></p>
+                <ul>
+                    <li><strong>Primeiro Nome:</strong> ${customerData.billing.first_name}</li>
+                    <li><strong>Sobrenome:</strong> ${customerData.billing.last_name}</li>
+                    <li><strong>Endereço 1:</strong> ${customerData.billing.address_1}</li>
+                    <li><strong>Endereço 2:</strong> ${customerData.billing.address_2}</li>
+                    <li><strong>Cidade:</strong> ${customerData.billing.city}</li>
+                    <li><strong>Estado:</strong> ${customerData.billing.state}</li>
+                    <li><strong>CEP:</strong> ${customerData.billing.postcode}</li>
+                    <li><strong>País:</strong> ${customerData.billing.country}</li>
+                    <li><strong>Email:</strong> ${customerData.billing.email}</li>
+                    <li><strong>Telefone:</strong> ${customerData.billing.phone}</li>
+                </ul>
+                <p><strong>Informações de Envio:</strong></p>
+                <ul>
+                    <li><strong>Primeiro Nome:</strong> ${customerData.shipping.first_name}</li>
+                    <li><strong>Sobrenome:</strong> ${customerData.shipping.last_name}</li>
+                    <li><strong>Endereço 1:</strong> ${customerData.shipping.address_1}</li>
+                    <li><strong>Endereço 2:</strong> ${customerData.shipping.address_2}</li>
+                    <li><strong>Cidade:</strong> ${customerData.shipping.city}</li>
+                    <li><strong>Estado:</strong> ${customerData.shipping.state}</li>
+                    <li><strong>CEP:</strong> ${customerData.shipping.postcode}</li>
+                    <li><strong>País:</strong> ${customerData.shipping.country}</li>
+                </ul>
             `;
             customersListDiv.appendChild(customerItem);
         });

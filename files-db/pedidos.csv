@@ -1,4 +1,0 @@
-billing,shipping,line_items
-Cliente A,Endereço A,"[{'product_id': 1, 'quantity': 2}, {'product_id': 2, 'quantity': 1}]"
-Cliente B,Endereço B,"[{'product_id': 2, 'quantity': 3}]"
-Cliente C,Endereço C,"[{'product_id': 1, 'quantity': 1}, {'product_id': 3, 'quantity': 1}]"

@@ -73,7 +73,13 @@ h1 {
 /* Estilo das abas de navegação */
 .tabs {
     display: flex;
-    justify-content: center;
+    justify-content: left;
+    margin: 20px 0;
+}
+
+.sub-tabs {
+    display: flex;
+    justify-content: left;
     margin: 20px 0;
 }
 
@@ -146,7 +152,7 @@ h1 {
     flex: 1; /* Faz cada botão ocupar igual espaço */
     padding: 15px; /* Preencher o botão com espaço interno */
     border: none; /* Remover a borda padrão */
-    background-color: #007bff; /* Cor de fundo do botão */
+    background-color: #232a07; /* Cor de fundo do botão */
     color: white; /* Cor do texto do botão */
     font-size: 16px; /* Tamanho da fonte */
     cursor: pointer; /* Cursor de mão ao passar o mouse */
@@ -154,7 +160,7 @@ h1 {
 }
 
 .tab-buttonMain:hover {
-    background-color: #0056b3; /* Cor do botão ao passar o mouse */
+    background-color: #ebf0f5; /* Cor do botão ao passar o mouse */
 }
 
 .tab-buttonMain:focus {
